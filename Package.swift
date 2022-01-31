@@ -4,15 +4,15 @@
 import PackageDescription
 
 let package = Package(
-    name: "myGifView",
+    name: "SSASwiftUIGifView",
     platforms: [
             .macOS(.v11), .iOS(.v14), .tvOS(.v14), .watchOS(.v7)
         ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "myGifView",
-            targets: ["myGifView"]),
+            name: "SSASwiftUIGifView",
+            targets: ["SSASwiftUIGifView"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -22,10 +22,14 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: "myGifView",
-            dependencies: []),
+            name: "SSASwiftUIGifView",
+            dependencies: [],
+            path: "Sources"),
         .testTarget(
             name: "myGifViewTests",
-            dependencies: ["myGifView"]),
+            dependencies: ["SSASwiftUIGifView"]),
+        .testTarget(
+            name: "DemoApp",
+            dependencies: ["SSASwiftUIGifView"]),
     ]
 )

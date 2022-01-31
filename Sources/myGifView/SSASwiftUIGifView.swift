@@ -4,7 +4,7 @@ import SwiftUI
 
 
 
-public struct myGifView : View {
+public struct SSASwiftUIGifView : View {
     
     @StateObject var animatingImg:AnimatingImage = AnimatingImage()
     private var config:GifConfig
