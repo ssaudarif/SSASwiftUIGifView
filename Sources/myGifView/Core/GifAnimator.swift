@@ -25,6 +25,7 @@ class GifAnimator {
     let displaylink:CADisplayLink
     weak var animationDelegate:GifAnimatorDelegate?
     private var frame:Int = -1
+    var nextDuration: CFTimeInterval = 0.0
 
     
     init(delegate : GifAnimatorDelegate) {
@@ -59,10 +60,10 @@ class GifAnimator {
         if frame >= n {
             frame = 0
         }
-        let duration = d.getFrameDuration(frame)
-        if duration > 0.0 {
-            displaylink.preferredFramesPerSecond = Int(1.0/duration)
-        }
+        self.nextDuration += d.getFrameDuration(frame)
+//        if duration > 0.0 {
+//            displaylink.preferredFramesPerSecond = Int(1.0/duration)
+//        }
     }
     
     ///Pause will completely remove all the data.
@@ -80,6 +81,11 @@ class GifAnimator {
     func getAnimatingBlock() -> ((CFTimeInterval, CFTimeInterval, CFTimeInterval) -> Void) {
         return { [weak self] (timestamp, targetTimestamp, duration) in
             if let kSelf = self {
+                kSelf.nextDuration = kSelf.nextDuration - duration
+                if kSelf.nextDuration >= 0 {
+                    return
+                }
+                
                 if (kSelf.animationDelegate?.isImageConstructed(kSelf.frame) ?? false) == false {
                     kSelf.animationDelegate?.constructImage(kSelf.frame)
                     
