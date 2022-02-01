@@ -1,3 +1,5 @@
-# myGifView
+# SSASwiftUIGifView
 
-A description of this package.
+This is currently Work in Progress.
+
+This package is purely designed in SwiftUI to show Gifs 
