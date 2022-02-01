@@ -8,25 +8,31 @@
 import SwiftUI
 import SSASwiftUIGifView
 
+struct URLContainer : Identifiable {
+    var id = UUID()
+    let url:URL
+}
+
+
 struct ContentView: View {
     
-    var gifs:[URL]
+    var gifs:[URLContainer]
     
     var body: some View {
         List() {
-            ForEach(self.gifs, id: \.self)
+            ForEach(self.gifs)
                 { gif in
-                    RowView(url: gif)
+                    RowView(url: gif.url)
             }
         }
     }
     
     init() {
-        var urls = [URL]()
+        var urls = [URLContainer]()
         for _ in 1...20 {
         for index in 1...10 {
             if let u = Bundle.main.url(forResource: "\(index)", withExtension: "gif") {
-                urls.append(u)
+                urls.append(URLContainer(url: u))
             }
         }
         }
