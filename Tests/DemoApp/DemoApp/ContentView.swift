@@ -29,13 +29,13 @@ struct ContentView: View {
     
     init() {
         var urls = [URLContainer]()
-        for _ in 1...20 {
-        for index in 1...10 {
+//        for _ in 1...20 {
+        for index in 1...6 {
             if let u = Bundle.main.url(forResource: "\(index)", withExtension: "gif") {
                 urls.append(URLContainer(url: u))
             }
         }
-        }
+//        }
         
         
         gifs = urls
@@ -53,7 +53,7 @@ struct RowView:View {
     let url:URL
     
     var body: some View {
-        return SSASwiftUIGifView(localFilePath: url, config:GifConfig.downsampleNoScaleConfig)
+        return SSASwiftUIGifView(localFilePath: url, config:GifConfig.defaultConfig)
     }
     
 }
