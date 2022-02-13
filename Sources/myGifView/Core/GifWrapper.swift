@@ -7,6 +7,9 @@
 
 import Foundation
 
+private let gifWrapperUserInfo: [String : Any] = [
+    NSLocalizedDescriptionKey :  "Optional data object provided is nil." ,
+    NSLocalizedFailureReasonErrorKey : "Optional data object provided is nil."]
 
 public protocol GifWrapper {
     func getImageData() -> Result<Data, Error>
@@ -31,10 +34,7 @@ extension Optional : GifWrapper where Wrapped == Data {
         case .some(let data) :
             return .success(data)
         case .none :
-            let userInfo: [String : Any] = [
-                    NSLocalizedDescriptionKey :  "Optional data object provided is nil." ,
-                    NSLocalizedFailureReasonErrorKey : "Optional data object provided is nil."]
-            return .failure(NSError.init(domain: "SSASwiftUIGifView", code: 400, userInfo: userInfo) )
+            return .failure(NSError.init(domain: "SSASwiftUIGifView", code: 400, userInfo: gifWrapperUserInfo) )
         }
     }
 }
