@@ -14,9 +14,12 @@ import AppKit
 import ImageIO
 
 public enum GifScale{
-    case screen //Will not casue any blurring.
-    case none   //Will have no scale.
-    case custom(value: CGFloat) //Custom scale. Will accept values as 2.0, 3.0, 0.5 etc.
+    ///Will not casue any blurring.
+    case screen
+    ///Will have no scale.
+    case none
+    ///Custom scale. Will accept values as 2.0, 3.0, 0.5 etc.
+    case custom(value: CGFloat)
 }
 
 public struct GifConfig {
@@ -65,7 +68,7 @@ public struct GifConfig {
         }
     }
     
-    // Default config should be good for majority of use cases.
+    /// Default config should be good for majority of use cases.
     public static var defaultConfig:GifConfig {
         return GifConfig(shouldCache:false,
                          shoulClipFrameRate:true,

@@ -21,14 +21,14 @@ struct GifReader {
     
     public var error:String? = nil
     private var imgSource:CGImageSource = CGImageSourceCreateIncremental(nil)
-    private let fileURL:URL
+    private let gifSource:GifWrapper
     var config:GifConfig
     weak var readerDelgate:GifReaderDelegate?
     let queue = DispatchQueue(label: "GifReaderQueue", attributes: .concurrent)
     
-    init(_ file:URL, delegate:GifReaderDelegate, config c: GifConfig) {
+    init(_ source:GifWrapper, delegate:GifReaderDelegate, config c: GifConfig) {
         readerDelgate = delegate
-        fileURL = file
+        gifSource = source
         config = c
         
         print("init reader")
@@ -38,7 +38,7 @@ struct GifReader {
     ///Play will  construct the imageSource again.
     ///and starts the animation.
     mutating func start() {
-        read(self.fileURL)
+        read(self.gifSource)
         readerDelgate?.isReadingCompleted()
     }
     
@@ -49,7 +49,7 @@ struct GifReader {
     }
     
     mutating func getFirstFrame() -> CGImage? {
-        read(self.fileURL)
+        read(self.gifSource)
         defer {
             distroySource()
         }
@@ -79,8 +79,8 @@ extension GifReader {
 
 extension GifReader {
     ///Main function to call to start the reading.
-    private mutating func read(_ fileURL:URL) {
-        switch (GifReader.getDataFrom(fileURL)) {
+    private mutating func read(_ source:GifWrapper) {
+        switch (source.getImageData()) {
         case .success(let data):
             startReading(data)
         case .failure(let err):

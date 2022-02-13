@@ -10,7 +10,16 @@ import SSASwiftUIGifView
 
 struct URLContainer : Identifiable {
     var id = UUID()
-    let url:URL
+    let url:URL?
+    let data:Data?
+    
+    func getSource() -> GifWrapper {
+        if let u = url {
+            return u
+        } else {
+            return data
+        }
+    }
 }
 
 
@@ -22,7 +31,7 @@ struct ContentView: View {
         List() {
             ForEach(self.gifs)
                 { gif in
-                    RowView(url: gif.url)
+                    RowView(source: gif.getSource())
             }
         }
     }
@@ -32,10 +41,15 @@ struct ContentView: View {
 //        for _ in 1...20 {
         for index in 1...6 {
             if let u = Bundle.main.url(forResource: "\(index)", withExtension: "gif") {
-                urls.append(URLContainer(url: u))
+                urls.append(URLContainer(url: u, data: nil))
+                if let data = try? Data.init(contentsOf: u) {
+                    urls.append(URLContainer(url: nil, data: data))
+                }
             }
         }
 //        }
+        
+        
         
         
         gifs = urls
@@ -50,10 +64,10 @@ struct ContentView_Previews: PreviewProvider {
 
 
 struct RowView:View {
-    let url:URL
+    let source:GifWrapper
     
     var body: some View {
-        return SSASwiftUIGifView(localFilePath: url, config:GifConfig.defaultConfig)
+        return SSASwiftUIGifView(source: source)
     }
     
 }

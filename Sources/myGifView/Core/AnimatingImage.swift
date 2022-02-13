@@ -22,8 +22,8 @@ class AnimatingImage: ObservableObject {
         self.imageReader?.config = c
     }
     
-    func startReadingGif(_ imageURL:URL) {
-        imageReader = GifReader(imageURL, delegate: self, config: config)
+    func startReadingGif(_ source:GifWrapper) {
+        imageReader = GifReader(source, delegate: self, config: config)
     }
     
     var isImageReadingStarted :Bool {

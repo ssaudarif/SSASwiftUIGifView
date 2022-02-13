@@ -25,9 +25,9 @@ let package = Package(
             name: "SSASwiftUIGifView",
             dependencies: [],
             path: "Sources"),
-        .testTarget(
-            name: "myGifViewTests",
-            dependencies: ["SSASwiftUIGifView"]),
+//        .testTarget(
+//            name: "myGifViewTests",
+//            dependencies: ["SSASwiftUIGifView"]),
         .testTarget(
             name: "DemoApp",
             dependencies: ["SSASwiftUIGifView"],
