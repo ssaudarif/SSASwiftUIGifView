@@ -46,7 +46,7 @@ The custom Config Can be provided during initiallization. For Example -
 ```
 
 ## TODOs [These functionalities needs to be added]
-- [x] Add Image Options in SSASwiftUIGifView.
-- [x] Add repeat count in config.
-- [x] Delegate based events and error reporting.
-- [x] Add cached images option in config.
+- Add Image Options in SSASwiftUIGifView.
+- Add repeat count in config.
+- Delegate based events and error reporting.
+- Add cached images option in config.
