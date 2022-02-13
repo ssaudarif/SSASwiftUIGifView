@@ -1,10 +1,16 @@
 # SSASwiftUIGifView
 
-This is currently Work in Progress.
+A Gif Renderer View that is made in SwiftUI. 
 
-This package is purely designed in SwiftUI to show Gifs 
 
-Issues : 
-    Speed of Gif
-    Use single DisplayLink to update all the displayed Gifs.
+<p align="center">
+    </br>
+    <img src="https://github.com/ssaudarif/SSASwiftUIGifView/blob/main/example.gif" align="center" />
+</p>
 
+## Features
+- [x] SwiftUI based solution.
+- [x] For mac and iOS Apps.
+- [x] Easy usage.
+- [x] Control playback.
+- [x] Performance tuning using Configuration.
