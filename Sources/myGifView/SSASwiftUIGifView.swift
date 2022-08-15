@@ -34,9 +34,19 @@ import SwiftUI
 ///
 public struct SSASwiftUIGifView : View {
     
+    /// The `animatingImg` is a ObservableObject that has only one
+    /// published property `image` of `UIImage` type.
+    ///
+    /// Everytime `image` property gets changed It will update `SSASwiftUIGifView`
+    /// by calling body property.
     @StateObject var animatingImg:AnimatingImage = AnimatingImage()
+    
+    /// The `config` is used to configure this instance of Gif view.
     private var config:GifConfig
+    
+    /// The `gifSource` is used asmgif data wrapper.
     private let gifSource:GifWrapper
+    
     
     public var body: some View {
         if !animatingImg.isImageReadingStarted {
@@ -93,6 +103,12 @@ public struct SSASwiftUIGifView : View {
         animatingImg.pause()
     }
 
+    /// The constructor
+    ///
+    /// This will use the GifWrapper protocol to provide gif Data.
+    /// Currently we only support Data and URL
+    /// Also the config can be set for this Gif file.
+    /// Default of config is - `defaultConfig`
     public init(source: GifWrapper, config c: GifConfig = GifConfig.defaultConfig) {
         gifSource = source
         config = c

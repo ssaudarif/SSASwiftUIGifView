@@ -8,9 +8,14 @@
 import SwiftUI
 import ImageIO
 
-
+/// The `AnimatingImage` is a ObservableObject that has only one
+/// published property `image` of `UIImage` type.
 class AnimatingImage: ObservableObject {
+    
+    /// Change this if you want to update the image.
     @Published var image:UIImage = UIImage()
+    
+    /// 
     var imageReader:GifReader? = nil
     var animator:GifAnimator? = nil
     var images:ImagesCache = ImagesCache()

@@ -16,7 +16,7 @@ protocol GifReaderDelegate: AnyObject {
     func imageConstructed(_ cgImg:CGImage?, for frame:Int)
 }
 
-
+/// The `GifReader` struct will help you read the Gif file.
 struct GifReader {
     
     public var error:String? = nil
@@ -26,24 +26,31 @@ struct GifReader {
     weak var readerDelgate:GifReaderDelegate?
     let queue = DispatchQueue(label: "GifReaderQueue", attributes: .concurrent)
     
+    /// Constructor for `GifReader`.
+    ///
+    /// Note : This will not automatically starts the reading. We need to call the `start()` function.
+    ///
+    /// - parameter source: The `GifWrapper` object to get the gif file source.
+    /// - parameter delegate: The `GifReaderDelegate` object that will get notified during the data reading process.
+    /// - parameter config: The `GifConfig` is the config object that can have some flag to alter the reading process.
     init(_ source:GifWrapper, delegate:GifReaderDelegate, config c: GifConfig) {
         readerDelgate = delegate
         gifSource = source
         config = c
         
-        print("init reader")
+        //print("init reader")
     }
 
     
-    ///Play will  construct the imageSource again.
-    ///and starts the animation.
+    /// Play will  construct the imageSource again
+    /// and starts the animation.
     mutating func start() {
         read(self.gifSource)
         readerDelgate?.isReadingCompleted()
     }
     
-    ///Pause will completely remove all the data.
-    ///and stops the animation.
+    /// Pause will completely remove all the data.
+    /// and stops the animation.
     mutating func stop() {
         distroySource()
     }
