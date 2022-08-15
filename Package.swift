@@ -25,17 +25,17 @@ let package = Package(
             name: "SSASwiftUIGifView",
             dependencies: [],
             path: "Sources"),
-//        .testTarget(
-//            name: "myGifViewTests",
-//            dependencies: ["SSASwiftUIGifView"]),
         .testTarget(
-            name: "DemoApp",
-            dependencies: ["SSASwiftUIGifView"],
-            resources: [
-                // Copy Tests/ExampleTests/Resources directories as-is.
-                // Use to retain directory structure.
-                // Will be at top level in bundle.
-                .copy("DemoApp/Gifs"),
-              ]),
+            name: "myGifViewTests",
+            dependencies: ["SSASwiftUIGifView"]),
+//        .testTarget(
+//            name: "DemoApp",
+//            dependencies: ["SSASwiftUIGifView"],
+//            resources: [
+//                // Copy Tests/ExampleTests/Resources directories as-is.
+//                // Use to retain directory structure.
+//                // Will be at top level in bundle.
+//                //.copy("DemoApp/Gifs"),
+//              ]),
     ]
 )
