@@ -59,7 +59,7 @@ public struct GifConfig {
 #if os(iOS)
             return UIScreen.main.scale
 #elseif os(macOS)
-            return NSScreen.main.backingScaleFactor
+            return NSScreen.main?.backingScaleFactor ?? 2.0
 #endif
         case .none:
             return CGFloat(1.0)

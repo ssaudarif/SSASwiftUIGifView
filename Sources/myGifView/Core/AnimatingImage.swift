@@ -13,7 +13,7 @@ import ImageIO
 class AnimatingImage: ObservableObject {
     
     /// Change this if you want to update the image.
-    @Published var image:UIImage = UIImage()
+    @Published var image:GIfImage = GIfImage()
     
     /// 
     var imageReader:GifReader? = nil
@@ -44,17 +44,17 @@ class AnimatingImage: ObservableObject {
         animator?.pause()
         images.cleanUp()
         queue.cleanUp()
-        image = UIImage()
+        image = GIfImage()
     }
     
     deinit {
     }
     
-    func getFirstFrame() -> UIImage {
+    func getFirstFrame() -> GIfImage {
         if let i = imageReader?.getFirstFrame() {
-            return UIImage(cgImage: i)
+            return GIfImage(cgImage: i)
         }
-        else { return UIImage() }
+        else { return GIfImage() }
     }
 }
 
@@ -80,7 +80,7 @@ extension AnimatingImage : GifAnimatorDelegate {
     func displayImage(_ frame: Int) {
         imageReader?.queue.sync {
             if let i = images.getImageFor(frame) {
-                image = UIImage(cgImage: i)
+                image = GIfImage(cgImage: i)
                 imageReader?.queue.async(flags: .barrier) { [weak self] in
                     self?.images.removeFromCache(frame)
                 }
@@ -117,4 +117,59 @@ extension AnimatingImage : GifAnimatorDelegate {
 //MARK: Remder a frame
 extension AnimatingImage {
     
+}
+
+
+
+
+
+
+class GIfImage {
+    #if os(iOS)
+    let image: UIImage
+    #else
+    let image: NSImage
+    #endif
+    
+    
+    init(cgImage: CGImage) {
+        #if os(iOS)
+        image = UIImage(cgImage: cgImage)
+        #else
+        image = NSImage(cgImage: cgImage, size: .zero)
+        #endif
+    }
+    
+    init() {
+        #if os(iOS)
+        image = UIImage()
+        #else
+        image = NSImage()
+        #endif
+    }
+    
+#if os(iOS)
+    var size: CGSize {
+        return image.size
+    }
+#else
+    var size: NSSize {
+        return image.size
+    }
+#endif
+}
+
+
+
+
+extension Image {
+    init(gifImage: GIfImage) {
+        #if os(iOS)
+        let uiImage = gifImage.image
+        self.init(uiImage: uiImage)
+        #else
+        let nsImage = gifImage.image
+        self.init(nsImage: nsImage)
+        #endif
+    }
 }

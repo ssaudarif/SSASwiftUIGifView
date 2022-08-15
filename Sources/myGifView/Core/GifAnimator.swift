@@ -22,7 +22,7 @@ protocol GifAnimatorDelegate: AnyObject {
 class GifAnimator {
     
     let displayLinkWrapper = GifAnimatorDisplayLink()
-    let displaylink:CADisplayLink
+//    let displaylink:CADisplayLink
     weak var animationDelegate:GifAnimatorDelegate?
     private var frame:Int = -1
     var nextDuration: CFTimeInterval = minDuration
@@ -52,11 +52,8 @@ class GifAnimator {
     
     init(delegate : GifAnimatorDelegate) {
         animationDelegate = delegate
-        displaylink = CADisplayLink(
-            target: displayLinkWrapper,
-            selector: #selector(GifAnimatorDisplayLink.renderFrame(displaylink:))
-        )
         displayLinkWrapper.eventBlock = getAnimatingBlock()
+        displayLinkWrapper.setup()
     }
 
     ///Play will  construct the imageSource again.
@@ -67,11 +64,11 @@ class GifAnimator {
     }
     
     private func startAnimation() {
-        displaylink.add(to: .main, forMode: .default)
+        displayLinkWrapper.start()
     }
     
     private func setUpFrameStart() {
-        displaylink.preferredFramesPerSecond = 0
+        displayLinkWrapper.setUpFrameStart()
         frame = 0
     }
     
@@ -101,8 +98,7 @@ class GifAnimator {
     }
     
     private func stopAnimation() {
-        displaylink.isPaused = true
-        displaylink.invalidate()
+        displayLinkWrapper.stop()
     }
     
     
@@ -137,11 +133,108 @@ class GifAnimator {
 
 class GifAnimatorDisplayLink {
     
+#if os(iOS)
+    var displaylink: CADisplayLink?
+#else
+    var displaylink: CVDisplayLink?
+#endif
+    
     var eventBlock:((CFTimeInterval, CFTimeInterval, CFTimeInterval) -> Void)?
     
+    func setup() {
+#if os(iOS)
+        displaylink = CADisplayLink(
+            target: self,
+            selector: #selector(GifAnimatorDisplayLink.renderFrame(displaylink:))
+        )
+#else
+        let displayID = CGMainDisplayID()
+        let error = CVDisplayLinkCreateWithCGDisplay(displayID, &displaylink)
+        if (error != kCVReturnSuccess) {
+            Swift.print("Error: CVDisplayLinkCreateWithCGDisplay error")
+            return
+        }
+
+        guard let link = displaylink else {
+            Swift.print("Error: Failed to get displayLink")
+            return
+        }
+        GifAnimatorDisplayLinkHolder.wrapper = self
+        CVDisplayLinkSetOutputCallback(link, { displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext in
+            GifAnimatorDisplayLinkHolder.renderCallback(displayLink: displayLink, inNow: inNow, inOutputTime: inOutputTime, flagsIn: flagsIn, flagsOut: flagsOut, displayLinkContext: displayLinkContext)
+        }, nil)
+        CVDisplayLinkStart(link)
+#endif
+    }
     
+    func setUpFrameStart() {
+#if os(iOS)
+        displaylink?.preferredFramesPerSecond = 0
+#endif
+    }
+    
+    
+    func stop() {
+        guard let link = displaylink else { return }
+#if os(iOS)
+        link.isPaused = true
+        link.invalidate()
+#else
+        CVDisplayLinkStop(link)
+#endif
+    }
+    
+    func start() {
+        guard let link = displaylink else { return }
+#if os(iOS)
+        link.add(to: .main, forMode: .default)
+#else
+        CVDisplayLinkStart(link)
+#endif
+    }
+    
+    
+#if os(iOS)
     @objc func renderFrame(displaylink: CADisplayLink) {
         eventBlock?(displaylink.timestamp, displaylink.targetTimestamp, displaylink.duration)
     }
+#else
+    func renderCallback(
+        displayLink: CVDisplayLink,
+        inNow: UnsafePointer<CVTimeStamp>,
+        inOutputTime: UnsafePointer<CVTimeStamp>,
+        flagsIn: UInt64,
+        flagsOut: UnsafeMutablePointer<UInt64>,
+        displayLinkContext: Optional<UnsafeMutableRawPointer>
+    ) -> Int32 {
+        eventBlock?(0, 0, 0)
+        return 0
+    }
+    
+#endif
     
 }
+
+
+#if os(iOS)
+#else
+class GifAnimatorDisplayLinkHolder {
+    
+    static var wrapper: GifAnimatorDisplayLink?
+    
+    static func renderCallback(
+        displayLink: CVDisplayLink,
+        inNow: UnsafePointer<CVTimeStamp>,
+        inOutputTime: UnsafePointer<CVTimeStamp>,
+        flagsIn: UInt64,
+        flagsOut: UnsafeMutablePointer<UInt64>,
+        displayLinkContext: Optional<UnsafeMutableRawPointer>
+    ) -> Int32 {
+        print(inNow.pointee)
+        wrapper?.eventBlock?(0, 0, 0)
+        return 0
+    }
+    
+    
+}
+#endif

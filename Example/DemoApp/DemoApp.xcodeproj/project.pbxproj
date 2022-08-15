@@ -42,6 +42,7 @@
 		B354D3E528AA11160089EE35 /* 6.gif in Resources */ = {isa = PBXBuildFile; fileRef = B354D3CE28AA11160089EE35 /* 6.gif */; };
 		B354D3E628AA11160089EE35 /* 6.gif in Resources */ = {isa = PBXBuildFile; fileRef = B354D3CE28AA11160089EE35 /* 6.gif */; };
 		B387F0F128AA5A590078DB78 /* SSASwiftUIGifView in Frameworks */ = {isa = PBXBuildFile; productRef = B387F0F028AA5A590078DB78 /* SSASwiftUIGifView */; };
+		B387F0F328AA5D9D0078DB78 /* SSASwiftUIGifView in Frameworks */ = {isa = PBXBuildFile; productRef = B387F0F228AA5D9D0078DB78 /* SSASwiftUIGifView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +97,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B387F0F328AA5D9D0078DB78 /* SSASwiftUIGifView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,6 +244,7 @@
 			);
 			name = "DemoApp (macOS)";
 			packageProductDependencies = (
+				B387F0F228AA5D9D0078DB78 /* SSASwiftUIGifView */,
 			);
 			productName = "DemoApp (macOS)";
 			productReference = B354D39328AA0FC20089EE35 /* DemoApp.app */;
@@ -787,6 +790,10 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		B387F0F028AA5A590078DB78 /* SSASwiftUIGifView */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SSASwiftUIGifView;
+		};
+		B387F0F228AA5D9D0078DB78 /* SSASwiftUIGifView */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SSASwiftUIGifView;
 		};

@@ -6,7 +6,9 @@
 //
 
 import Foundation
+#if os(iOS)
 import UIKit
+#endif
 
 typealias ImagesCache = Dictionary<Int,CGImage>
 private let _queueKey = malloc(4)
