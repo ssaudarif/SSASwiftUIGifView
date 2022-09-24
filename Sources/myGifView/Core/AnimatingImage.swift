@@ -7,6 +7,11 @@
 
 import SwiftUI
 import ImageIO
+import SwiftDisplayLink
+
+
+//We are done with the SwiftDisplayLink work now it's time to integrate the swiftdiaplylinklibraray to the gif library.
+
 
 /// The `AnimatingImage` is a ObservableObject that has only one
 /// published property `image` of `UIImage` type.
@@ -17,7 +22,7 @@ class AnimatingImage: ObservableObject {
     
     /// 
     var imageReader:GifReader? = nil
-    var animator:GifAnimator? = nil
+    var displaylink:SwiftDisplayLink? = nil
     var images:ImagesCache = ImagesCache()
     var queue:FrameQueue = FrameQueue()
     var config:GifConfig = GifConfig.defaultConfig
@@ -41,7 +46,7 @@ class AnimatingImage: ObservableObject {
     
     func pause(){
         imageReader?.stop()
-        animator?.pause()
+
         images.cleanUp()
         queue.cleanUp()
         image = GIfImage()
@@ -66,13 +71,26 @@ extension AnimatingImage : GifReaderDelegate {
     
     func isReadingCompleted() {
         //should start the GifAnimator
-        animator = GifAnimator(delegate: self)
-        animator?.play() 
+        guard let reader = imageReader else { return }
+        displaylink = SwiftDisplayLink(frameCount: reader.getNumberOfFrames(), repeatFrames: true, { [weak self] frame in
+            let isImageConstructed = self?.isImageConstructed(frame) ?? false
+            return SwiftDisplayLinkFrameData(duration: reader.getFrameDuration(frame), isFrameConstructed: isImageConstructed)
+        })
+        displaylink?.play({ [weak self] event, frame in
+            switch (event) {
+            case .constructFrame:
+                self?.imageReader?.constructImageFor(frame)
+            case .performAction(let currTime, let duration):
+                self?.eventOccured(frame: frame, timestamp: currTime, targetTimestamp: currTime, duration: duration)
+            }
+        })
+//        animator = GifAnimator(delegate: self)
+//        animator?.play()
     }
 }
 
 
-extension AnimatingImage : GifAnimatorDelegate {
+extension AnimatingImage {//: GifAnimatorDelegate {
     func queueForDisplayImage(_ frame: Int) {
         queue.addFrameToQueue(frame)
     }
@@ -89,21 +107,21 @@ extension AnimatingImage : GifAnimatorDelegate {
     }
     
     func eventOccured(frame:Int, timestamp:CFTimeInterval, targetTimestamp:CFTimeInterval, duration:CFTimeInterval) {
-        let index = queue.getFirst()
-        //print("\(index),  -- \(queue)")
-        if index > -1 && images.isFrameCached(index) {
-            queue.removeFirst()
-            displayImage(index)
+//        let index = queue.getFirst()
+//        print("\(index),  -- \(queue)")
+        if images.isFrameCached(frame) {
+//            queue.removeFirst()
+            displayImage(frame)
         }
     }
     
-    func getFrameDuration(_ index:Int) -> CFTimeInterval {
-        return imageReader?.getFrameDuration(index) ?? 0.0
-    }
+//    func getFrameDuration(_ index:Int) -> CFTimeInterval {
+//        return imageReader?.getFrameDuration(index) ?? 0.0
+//    }
     
-    func getNumberOfFrames() -> Int {
-        return imageReader?.getNumberOfFrames() ?? 0
-    }
+//    func getNumberOfFrames() -> Int {
+//        return imageReader?.getNumberOfFrames() ?? 0
+//    }
     
     func constructImage(_ frame:Int) {
         imageReader?.constructImageFor(frame)
@@ -118,49 +136,6 @@ extension AnimatingImage : GifAnimatorDelegate {
 extension AnimatingImage {
     
 }
-
-
-
-
-
-
-class GIfImage {
-    #if os(iOS)
-    let image: UIImage
-    #else
-    let image: NSImage
-    #endif
-    
-    
-    init(cgImage: CGImage) {
-        #if os(iOS)
-        image = UIImage(cgImage: cgImage)
-        #else
-        image = NSImage(cgImage: cgImage, size: .zero)
-        #endif
-    }
-    
-    init() {
-        #if os(iOS)
-        image = UIImage()
-        #else
-        image = NSImage()
-        #endif
-    }
-    
-#if os(iOS)
-    var size: CGSize {
-        return image.size
-    }
-#else
-    var size: NSSize {
-        return image.size
-    }
-#endif
-}
-
-
-
 
 extension Image {
     init(gifImage: GIfImage) {

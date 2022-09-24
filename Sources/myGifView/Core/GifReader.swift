@@ -46,7 +46,10 @@ struct GifReader {
     /// and starts the animation.
     mutating func start() {
         read(self.gifSource)
-        readerDelgate?.isReadingCompleted()
+        guard let delegate = readerDelgate else { return }
+        DispatchQueue.main.async {
+            delegate.isReadingCompleted()
+        }
     }
     
     /// Pause will completely remove all the data.
