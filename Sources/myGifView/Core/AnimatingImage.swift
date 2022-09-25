@@ -15,6 +15,7 @@ import SwiftDisplayLink
 
 /// The `AnimatingImage` is a ObservableObject that has only one
 /// published property `image` of `UIImage` type.
+@MainActor
 class AnimatingImage: ObservableObject {
     
     /// Change this if you want to update the image.
@@ -98,7 +99,11 @@ extension AnimatingImage {//: GifAnimatorDelegate {
     func displayImage(_ frame: Int) {
         imageReader?.queue.sync {
             if let i = images.getImageFor(frame) {
-                image = GIfImage(cgImage: i)
+                Task {
+                    await MainActor.run {
+                        image = GIfImage(cgImage: i)
+                    }
+                }
                 imageReader?.queue.async(flags: .barrier) { [weak self] in
                     self?.images.removeFromCache(frame)
                 }
