@@ -61,7 +61,7 @@ public struct SSASwiftUIGifView : View {
         
     }
     
-    private func makeImageViewAndAttachOverlay(_ i : UIImage) -> some View {
+    private func makeImageViewAndAttachOverlay(_ i : GIfImage) -> some View {
         makeImageView(i)
             .background(
                 GeometryReader { geometryProxy in
@@ -81,8 +81,8 @@ public struct SSASwiftUIGifView : View {
     }
 
         
-    private func makeImageView(_ i : UIImage/*,_ geometry : GeometryProxy*/) -> some View {
-        return Image.init(uiImage: i).resizable().aspectRatio(nil, contentMode: ContentMode.fit)
+    private func makeImageView(_ i : GIfImage/*,_ geometry : GeometryProxy*/) -> some View {
+        return Image.init(gifImage: i).resizable().aspectRatio(nil, contentMode: ContentMode.fit)
             .onDisappear {
                 //print("Pausing")
                 pause()

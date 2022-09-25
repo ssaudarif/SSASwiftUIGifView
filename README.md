@@ -50,3 +50,5 @@ The custom Config Can be provided during initiallization. For Example -
 - Add repeat count in config.
 - Delegate based events and error reporting.
 - Add cached images option in config.
+- Accessibility support. Screenreader support.
+- Multi target support.

@@ -7,21 +7,23 @@
 
 import Foundation
 import ImageIO
-import UIKit
+//import UIKit
 import SwiftUI
 
-
+/// This protocol will act as a delegate instance to transfer callbacks when GirReader wants too.
 protocol GifReaderDelegate: AnyObject {
+    
     func isReadingCompleted()
     func imageConstructed(_ cgImg:CGImage?, for frame:Int)
 }
 
 /// The `GifReader` struct will help you read the Gif file.
 struct GifReader {
-    
+    /// The error will keep all the errors stored.
+    /// TODO: Need to check how the error is getting reported.
     public var error:String? = nil
     private var imgSource:CGImageSource = CGImageSourceCreateIncremental(nil)
-    private let gifSource:GifWrapper
+    private let gifFileWrapper:GifWrapper
     var config:GifConfig
     weak var readerDelgate:GifReaderDelegate?
     let queue = DispatchQueue(label: "GifReaderQueue", attributes: .concurrent)
@@ -35,18 +37,28 @@ struct GifReader {
     /// - parameter config: The `GifConfig` is the config object that can have some flag to alter the reading process.
     init(_ source:GifWrapper, delegate:GifReaderDelegate, config c: GifConfig) {
         readerDelgate = delegate
-        gifSource = source
+        gifFileWrapper = source
         config = c
         
         //print("init reader")
     }
 
     
-    /// Play will  construct the imageSource again
+    /// start will  construct the imageSource again
     /// and starts the animation.
-    mutating func start() {
-        read(self.gifSource)
-        readerDelgate?.isReadingCompleted()
+    /// - parameter shouldStartAnimation: pass false in `shouldStartAnimation`.
+    ///         if you do not want the delegate object to start the animation.
+    ///
+    mutating func start(_ shouldStartAnimation: Bool = true) {
+        // will create the imagsource.
+        read(self.gifFileWrapper)
+        
+        if shouldStartAnimation {
+            guard let delegate = readerDelgate else { return }
+            DispatchQueue.main.async {
+                delegate.isReadingCompleted()
+            }
+        }
     }
     
     /// Pause will completely remove all the data.
@@ -55,11 +67,14 @@ struct GifReader {
         distroySource()
     }
     
+    /// This is a different function. Call this function when you do not want to start the animation but just get a first image.
+    /// Helps in showing the thumbnail etc.
     mutating func getFirstFrame() -> CGImage? {
-        read(self.gifSource)
+        start(false)
         defer {
-            distroySource()
+            stop()
         }
+        
         return imgSource.getImage(at: 0, config)
     }
     
@@ -85,8 +100,10 @@ extension GifReader {
 }
 
 extension GifReader {
-    ///Main function to call to start the reading.
+    /// Main function to call to start the reading.
+    /// Here the source is GifWrapper that means that is not exactly gif File
     private mutating func read(_ source:GifWrapper) {
+        /// Calling getImageData() on GifWrapper will provide a data or error.
         switch (source.getImageData()) {
         case .success(let data):
             startReading(data)
@@ -95,11 +112,12 @@ extension GifReader {
         }
     }
     
-    ///This will be called from read function.
+    /// This will be called from read function.
+    /// This is the first time image source is getting created.
     mutating func startReading(_ data:Data) {
         let cfDic = [:] as CFDictionary
         //CGAnimateImageDataWithBlock(data as CFData, cfDic, self.blockToAnimatePictures)
-        guard let s = CGImageSourceCreateWithData(data as CFData, cfDic) else { //TODO : config to pass
+        guard let s = CGImageSourceCreateWithData(data as CFData, cfDic) else { //TODO: config to pass
             error = "Not a valid image file."
             return
         }
