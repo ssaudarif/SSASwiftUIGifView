@@ -21,7 +21,7 @@ class AnimatingImage: ObservableObject {
     /// Change this if you want to update the image.
     @Published var image:GIfImage = GIfImage()
     
-    /// 
+    /// Needs to read image.
     var imageReader:GifReader? = nil
     var displaylink:SwiftDisplayLink? = nil
     var images:ImagesCache = ImagesCache()
